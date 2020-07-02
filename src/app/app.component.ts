@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { UserService, User } from './user.service';
-import { Observable } from 'rxjs';
+import { UserService } from './user.service';
+import { Observable, Subject, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +10,18 @@ import { Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  users$: Observable<User[]>;
+  users$: Observable<any>;
+  loadingError$ = new Subject<boolean>();
 
   constructor(private userSerice: UserService) {
-    this.users$ = userSerice.users$;
+    this.users$ = userSerice.users$.pipe(
+      catchError((error) => {
+        // it's important that we log an error here.
+        // Otherwise you won't see an error in the console.
+        console.error('error loading the list of users', error);
+        this.loadingError$.next(true);
+        return of();
+      })
+    );
   }
 }

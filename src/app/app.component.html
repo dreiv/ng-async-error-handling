@@ -1,11 +1,17 @@
 <p>A network connection is simulated, half the calls error out.</p>
 
-<div *ngIf="users$ | async as users; else loading">
+<div *ngIf="users$ | async as users; else loadingOrError">
   <div *ngFor="let user of users">
     {{ user.name }}
   </div>
 </div>
 
-<ng-template #loading>
-  Loading users...
+<ng-template #loadingOrError>
+  <div *ngIf="loadingError$ | async; else loading">
+    Error loading the list of users. Please try again later.
+  </div>
+
+  <ng-template #loading>
+    Loading users...
+  </ng-template>
 </ng-template>
