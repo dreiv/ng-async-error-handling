@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
 
 export interface User {
   id: string;
@@ -36,6 +36,16 @@ export class UserService {
   constructor() {
     this.users = new BehaviorSubject<User[]>(seedUsers);
 
-    this.users$ = this.users.asObservable().pipe(delay(1600));
+    this.users$ = this.users.asObservable()
+      .pipe(
+        delay(1600),
+        map(res => {
+          if (Math.random() < 0.5) {
+            throw new Error('Unreliable connection');
+          }
+
+          return res;
+        })
+      );
   }
 }
