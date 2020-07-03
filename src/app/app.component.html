@@ -1,17 +1,10 @@
-<p>A network connection is simulated, half the calls error out.</p>
+<p>A network connection is simulated, 70% of the calls error out. up to 2 retries are used.</p>
 
-<div *ngIf="users$ | async as users; else loadingOrError">
-  <div *ngFor="let user of users">
-    {{ user.name }}
-  </div>
-</div>
+<section *ngIf="users$.data | async as users">
+  <div>{{ users | json }}</div>
+</section>
 
-<ng-template #loadingOrError>
-  <div *ngIf="loadingError$ | async; else loading">
-    Error loading the list of users. Please try again later.
-  </div>
-
-  <ng-template #loading>
-    Loading users...
-  </ng-template>
-</ng-template>
+<section [ngSwitch]="users$.status | async">
+  <span *ngSwitchCase="Status.LOADING">Loading Users...</span>
+  <span *ngSwitchCase="Status.ERROR">There was an error loading the users.</span>
+</section>
